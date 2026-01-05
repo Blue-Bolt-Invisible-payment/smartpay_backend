@@ -116,6 +116,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.caenrfid</groupId>
+            <artifactId>caenrfid-sdk</artifactId>
+            <version>5.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
