@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 @Service
@@ -26,9 +27,10 @@ public class RFIDServiceNew {
         try {
             reader = new CAENRFIDReader();
 
-            // Try scanning RS232 ports; if none succeed, abort init (or switch to TCP fallback here)
-            if (!connectRs232()) {
-                System.err.println("RS232 connect failed for scanned ports. Verify Device Manager, drivers and native DLL architecture.");
+            // Try scanning COM1..COM20 and attempt RS232 first, then USB fallback.
+            if (!connectAndWait()) {
+                System.err.println("RFID reader not found or not ready. Verify Device Manager, drivers and native DLL architecture.");
+                // Do not throw here to allow Spring context to start; service will be inactive.
                 return;
             }
 
@@ -36,35 +38,82 @@ public class RFIDServiceNew {
             System.out.println("Connected to CAEN RFID Reader: " + info.GetModel());
 
             logicalSource = reader.GetSource("Source_0");
+            if (logicalSource == null) {
+                System.err.println("Logical source 'Source_0' not found on reader.");
+                return;
+            }
+
             inventoryTags();
 
+        } catch (UnsatisfiedLinkError lle) {
+            System.err.println("Native CAEN DLL error: " + lle.getMessage() + " — check native DLL presence and 32/64-bit match.");
         } catch (CAENRFIDException e) {
             System.err.println("Error initializing CAEN RFID reader: " + e.getMessage());
+        } catch (Exception ex) {
+            System.err.println("Unexpected init error: " + ex.getMessage());
         }
     }
 
-    private boolean connectRs232() {
-        // Scan COM1..COM20. Use "\\\\.\\COMx" for x > 9 (Java literal yields \\.\COMx at runtime).
+    // Scans COM1..COM20. For each port try RS232 then USB. After Connect, wait until GetReaderInfo succeeds (small retry loop).
+    private boolean connectAndWait() {
         String[] ports = IntStream.rangeClosed(1, 20)
-                .mapToObj(i -> i > 9 ? "\\\\.\\" + "COM" + i : "COM" + i) // results like "\\\\.\\COM10"
+                .mapToObj(i -> i > 9 ? "\\\\.\\" + "COM" + i : "COM" + i)
                 .toArray(String[]::new);
 
         for (String port : ports) {
-            try {
-                System.out.println("Trying RS232 port: " + port);
-                reader.Connect(CAENRFIDPort.CAENRFID_RS232, port);
-                System.out.println("Connected to CAEN RFID on " + port);
-                return true;
-            } catch (CAENRFIDException e) {
-                System.out.println("RS232 connect failed for " + port + ": " + e.getMessage());
-            } catch (UnsatisfiedLinkError lle) {
-                System.err.println("Native library error: " + lle.getMessage() + " — check CAEN native DLL presence and 32/64-bit match.");
-                break; // native DLL missing or wrong arch; stop scanning
-            } catch (Exception ex) {
-                System.err.println("Unexpected error on " + port + ": " + ex.getMessage());
-            }
+            // Try RS232
+           // if (tryConnectAndWaitForReady(CAENRFIDPort.CAENRFID_RS232, port)) return true;
+            // Try USB (some CAEN drivers expose USB as COM)
+            if (tryConnectAndWaitForReady(CAENRFIDPort.CAENRFID_USB, port)) return true;
         }
         return false;
+    }
+
+    private boolean tryConnectAndWaitForReady(CAENRFIDPort portType, String port) {
+        try {
+            System.out.println("Trying " + (portType == CAENRFIDPort.CAENRFID_RS232 ? "RS232" : "USB") + " on " + port);
+            reader.Connect(portType, port);
+
+            // After Connect, the reader firmware may need a short time to become ready. Poll GetReaderInfo for up to 5 seconds.
+            final int maxAttempts = 10;
+            final long sleepMillis = 500;
+            for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    CAENRFIDReaderInfo info = reader.GetReaderInfo();
+                    if (info != null) {
+                        System.out.println("Connected and ready on " + port);
+                        return true;
+                    }
+                } catch (CAENRFIDException e) {
+                    // Not ready yet; continue retrying
+                    System.out.println("Reader not ready yet on " + port + " (attempt " + attempt + "): " + e.getMessage());
+                }
+                try {
+                    TimeUnit.MILLISECONDS.sleep(sleepMillis);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+
+            // If not ready within timeout, disconnect and continue scanning
+            try {
+                reader.Disconnect();
+            } catch (Exception ignore) { }
+            System.out.println("Timed out waiting for reader readiness on " + port);
+            return false;
+
+        } catch (CAENRFIDException e) {
+            System.out.println("Connect failed on " + port + ": " + e.getMessage());
+            return false;
+        } catch (UnsatisfiedLinkError lle) {
+            System.err.println("Native library error while connecting: " + lle.getMessage());
+            // stop scanning further because native DLL missing/wrong arch
+            throw lle;
+        } catch (Exception ex) {
+            System.err.println("Unexpected error while connecting on " + port + ": " + ex.getMessage());
+            return false;
+        }
     }
 
     public void inventoryTags() {
@@ -83,6 +132,8 @@ public class RFIDServiceNew {
             tagForwarder.forwardTag(epcTags);
         } catch (CAENRFIDException e) {
             System.err.println("Error during tag inventory: " + e.getMessage());
+        } catch (Exception ex) {
+            System.err.println("Unexpected inventory error: " + ex.getMessage());
         }
     }
 
