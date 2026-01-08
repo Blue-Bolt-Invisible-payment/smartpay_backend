@@ -14,7 +14,7 @@ import java.util.List;
 public class RFIDService {
 
 
-    private CAENRFIDReader reader;
+    /*private CAENRFIDReader reader;
     private CAENRFIDLogicalSource logicalSource;
 
     @Autowired
@@ -23,11 +23,14 @@ public class RFIDService {
     @PostConstruct
     public void init() {
         try {
-            reader = new CAENRFIDReader();
+           reader = new CAENRFIDReader();
             // Connect to the reader (e.g., via USB or Ethernet)
 
-            reader.Connect(CAENRFIDPort.CAENRFID_RS232, "COM1");
-            // reader.Connect(CAENRFIDPort.CAENRFID_TCP,"192.168.0.2");
+             reader.Connect(CAENRFIDPort.CAENRFID_USB, "COM5");
+            //reader.Connect(CAENRFIDPort.CAENRFID_RS232, "COM1");
+            //reader.Connect(CAENRFIDPort.CAENRFID_TCP,"192.168.0.2");
+
+
             CAENRFIDReaderInfo info = reader.GetReaderInfo();
             System.out.println("Connected to CAEN RFID Reader: " + info.GetModel());
 
@@ -71,7 +74,6 @@ public class RFIDService {
                 System.err.println("Error disconnecting from CAEN RFID reader: " + e.getMessage());
             }
         }
-    }
-
+    }*/
 
 }
