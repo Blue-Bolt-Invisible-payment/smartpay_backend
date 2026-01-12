@@ -6,15 +6,17 @@ import com.fazecast.jSerialComm.SerialPort;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+@Service
 public class RFIDServiceNew1 {
 
-    private CAENRFIDReader reader;
+    /*private CAENRFIDReader reader;
     private CAENRFIDLogicalSource logicalSource;
 
     @Autowired
@@ -205,5 +207,5 @@ public class RFIDServiceNew1 {
             }
         }
     }
-
+*/
 }

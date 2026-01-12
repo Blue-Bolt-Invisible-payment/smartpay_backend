@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 public class RFIDServiceNew {
 
 
-    private CAENRFIDReader reader;
+    /*private CAENRFIDReader reader;
     private CAENRFIDLogicalSource logicalSource;
 
     @Autowired
@@ -147,6 +147,6 @@ public class RFIDServiceNew {
                 System.err.println("Error disconnecting from CAEN RFID reader: " + e.getMessage());
             }
         }
-    }
+    }*/
 
 }
