@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.jdbc.core.JdbcTemplate;
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000")
+<<<<<<< HEAD
 
 @RequiredArgsConstructor
 //@Slf4j
@@ -29,11 +33,23 @@ public class BiometricAuthController {
     /**
      * Authenticate user with fingerprint
      *
+=======
+@Slf4j
+@RequiredArgsConstructor
+public class BiometricAuthController {
+
+    private final BiometricService biometricService;
+
+    /**
+     * Authenticate user with fingerprint
+     * 
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
      * POST /api/auth/fingerprint
      */
     @PostMapping("/fingerprint")
     public ResponseEntity<UserDTO> authenticateFingerprint(
             @Valid @RequestBody FingerprintAuthRequest request) {
+<<<<<<< HEAD
 
         log.info("Received fingerprint authentication request");
 
@@ -44,6 +60,18 @@ public class BiometricAuthController {
 
             return ResponseEntity.ok(userDTO);
 
+=======
+        
+        log.info("Received fingerprint authentication request");
+        
+        try {
+            User user = biometricService.authenticateFingerprint(request);
+            
+            UserDTO userDTO = convertToDTO(user);
+            
+            return ResponseEntity.ok(userDTO);
+            
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         } catch (Exception e) {
             log.error("Authentication failed", e);
             throw e;
@@ -52,34 +80,59 @@ public class BiometricAuthController {
 
     /**
      * Enroll new fingerprint
+<<<<<<< HEAD
      *
+=======
+     * 
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
      * POST /api/auth/enroll
      */
     @PostMapping("/enroll")
     public ResponseEntity<EnrollmentResponse> enrollFingerprint(
             @Valid @RequestBody EnrollmentRequest request) {
+<<<<<<< HEAD
 
         log.info("Received enrollment request for user: {}", request);
 
         EnrollmentResponse response = biometricService.enrollFingerprint(request);
 
+=======
+        
+        log.info("Received enrollment request for user: {}", request.getUserId());
+        
+        EnrollmentResponse response = biometricService.enrollFingerprint(request);
+        
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Register new user with biometric enrollment
+<<<<<<< HEAD
      *
+=======
+     * 
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
      * POST /api/auth/register
      */
     @PostMapping("/register")
     public ResponseEntity<com.cognizant.smartpay.dto.RegistrationResponse> registerUser(
             @Valid @RequestBody com.cognizant.smartpay.dto.RegistrationRequest request) {
+<<<<<<< HEAD
 
         log.info("Received registration request for: {}", request);
 
         try {
             User user = biometricService.registerNewUser(request);
 
+=======
+        
+        log.info("Received registration request for: {}", request.getEmail());
+        
+        try {
+            User user = biometricService.registerNewUser(request);
+            
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
             com.cognizant.smartpay.dto.RegistrationResponse response = com.cognizant.smartpay.dto.RegistrationResponse.builder()
                 .userId(user.getUserId())
                 .name(user.getName())
@@ -90,9 +143,15 @@ public class BiometricAuthController {
                 .status(user.getStatus())
                 .message("User registered successfully")
                 .build();
+<<<<<<< HEAD
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+=======
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         } catch (IllegalArgumentException e) {
             log.error("Registration validation error: {}", e.getMessage());
             throw e;
@@ -104,7 +163,11 @@ public class BiometricAuthController {
 
     /**
      * Get all registered credential IDs for WebAuthn authentication
+<<<<<<< HEAD
      *
+=======
+     * 
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
      * GET /api/auth/credentials
      */
     @GetMapping("/credentials")
@@ -120,7 +183,11 @@ public class BiometricAuthController {
 
     /**
      * Health check endpoint
+<<<<<<< HEAD
      *
+=======
+     * 
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
      * GET /api/auth/health
      */
     @GetMapping("/health")

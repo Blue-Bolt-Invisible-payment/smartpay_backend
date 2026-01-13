@@ -35,6 +35,7 @@ public class User {
     @Column(name = "biometric_enabled", nullable = false)
     private Boolean biometricEnabled = false;
 
+<<<<<<< HEAD
     public Long getUserId() {
         return userId;
     }
@@ -43,6 +44,8 @@ public class User {
         this.userId = userId;
     }
 
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
     @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
@@ -65,6 +68,7 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
+<<<<<<< HEAD
     public String getEmail() {
         return email;
     }
@@ -101,10 +105,15 @@ public class User {
         return walletBalance;
     }
 
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 }

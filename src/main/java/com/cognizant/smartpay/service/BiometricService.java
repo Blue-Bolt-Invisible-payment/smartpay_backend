@@ -29,7 +29,10 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+<<<<<<< HEAD
 
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 public class BiometricService {
 
     private final BiometricRepository biometricRepository;
@@ -229,6 +232,7 @@ public class BiometricService {
     @Transactional
     public EnrollmentResponse enrollFingerprint(EnrollmentRequest request) {
         log.debug("Enrolling fingerprint for user: {}", request.getUserId());
+<<<<<<< HEAD
 
         // Verify user exists
         User user = userRepository.findById(request.getUserId())
@@ -237,17 +241,34 @@ public class BiometricService {
         Map<String, Object> fingerprintData = request.getFingerprintData();
         Map<String, Object> deviceInfo = request.getDeviceInfo();
 
+=======
+        
+        // Verify user exists
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> new BiometricNotFoundException("User not found"));
+        
+        Map<String, Object> fingerprintData = request.getFingerprintData();
+        Map<String, Object> deviceInfo = request.getDeviceInfo();
+        
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         Biometric biometric = new Biometric();
         biometric.setUserId(user.getUserId());
         biometric.setDeviceType((String) deviceInfo.get("deviceType"));
         biometric.setEnrollmentMethod((String) deviceInfo.get("method"));
+<<<<<<< HEAD
 
         String method = (String) deviceInfo.get("method");
 
+=======
+        
+        String method = (String) deviceInfo.get("method");
+        
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         if ("webauthn".equals(method)) {
             // Store WebAuthn credential
             String credentialId = (String) fingerprintData.get("credentialId");
             String publicKeyB64 = (String) fingerprintData.get("publicKey");
+<<<<<<< HEAD
 
             biometric.setCredentialId(credentialId);
 
@@ -261,10 +282,26 @@ public class BiometricService {
             // Store dummy template for WebAuthn
             biometric.setFingerprintTemplate(new byte[0]);
 
+=======
+            
+            biometric.setCredentialId(credentialId);
+            
+            if (publicKeyB64 != null) {
+                biometric.setPublicKey(Base64.getDecoder().decode(publicKeyB64));
+            }
+            
+            // Generate hash
+            biometric.setFingerprintHash(generateHash(credentialId));
+            
+            // Store dummy template for WebAuthn
+            biometric.setFingerprintTemplate(new byte[0]);
+            
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         } else if ("external_usb".equals(method)) {
             // Store fingerprint template
             String templateB64 = (String) fingerprintData.get("fingerprintTemplate");
             byte[] template = Base64.getDecoder().decode(templateB64);
+<<<<<<< HEAD
 
             biometric.setFingerprintTemplate(template);
             biometric.setFingerprintHash(generateHash(templateB64));
@@ -282,6 +319,25 @@ public class BiometricService {
 
         log.info("Fingerprint enrolled successfully for user: {}", user.getEmail());
 
+=======
+            
+            biometric.setFingerprintTemplate(template);
+            biometric.setFingerprintHash(generateHash(templateB64));
+        }
+        
+        biometric.setIsActive(true);
+        biometric.setVerificationCount(0);
+        biometric.setEnrolledAt(LocalDateTime.now());
+        
+        biometric = biometricRepository.save(biometric);
+        
+        // Update user biometric status
+        user.setBiometricEnabled(true);
+        userRepository.save(user);
+        
+        log.info("Fingerprint enrolled successfully for user: {}", user.getEmail());
+        
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         return new EnrollmentResponse(
             biometric.getBiometricId(),
             "Fingerprint enrolled successfully",

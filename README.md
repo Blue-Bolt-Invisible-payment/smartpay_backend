@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SmartPay Backend - Spring Boot Application
 
 ## 📋 Overview
@@ -336,3 +337,6 @@ Server running on: http://localhost:8080
 **Version:** 1.0.0  
 **Last Updated:** December 8, 2025  
 **Status:** Production Ready
+=======
+# smartpay_backend
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e

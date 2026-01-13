@@ -22,6 +22,7 @@ public class UserDTO {
     private Boolean biometricEnabled;
     private Boolean enabled;
     private String status;
+<<<<<<< HEAD
 
     public void setId(Long id) {
         this.id = id;
@@ -54,4 +55,6 @@ public class UserDTO {
     public void setStatus(String status) {
         this.status = status;
     }
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 }

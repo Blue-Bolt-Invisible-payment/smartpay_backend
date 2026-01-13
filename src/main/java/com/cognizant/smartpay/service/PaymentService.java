@@ -1,13 +1,19 @@
 package com.cognizant.smartpay.service;
 
+<<<<<<< HEAD
 import com.cognizant.smartpay.entity.User;
 import com.cognizant.smartpay.repository.UserRepository;
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 import com.twilio.Twilio;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -15,9 +21,13 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+<<<<<<< HEAD
 import java.io.File;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+=======
+import java.math.BigDecimal;
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -111,6 +121,7 @@ public class PaymentService {
 
         // 6. Update Inventory and Wallet
         for (Map<String, Object> item : cartItems) {
+<<<<<<< HEAD
             Long productId = (Long) item.get("productId");
             int quantityToBuy = (int) item.get("quantity");
 
@@ -124,16 +135,27 @@ public class PaymentService {
             }
             // -------------------------------
 
+=======
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
             // Insert into transaction_items
             jdbcTemplate.update("""
                 INSERT INTO transaction_items (transaction_id, product_id, product_name, product_brand, quantity, unit_price, subtotal)
                 VALUES (?, ?, ?, ?, ?, ?, ?)""",
+<<<<<<< HEAD
                     transactionId, productId, item.get("productName"), item.get("productBrand"),
                     quantityToBuy, item.get("unitPrice"), item.get("subtotal"));
 
             // Decrease product stock
             jdbcTemplate.update("UPDATE products SET stock_quantity = stock_quantity - ? WHERE product_id = ?",
                     quantityToBuy, productId);
+=======
+                    transactionId, item.get("productId"), item.get("productName"), item.get("productBrand"),
+                    item.get("quantity"), item.get("unitPrice"), item.get("subtotal"));
+
+            // Decrease product stock
+            jdbcTemplate.update("UPDATE products SET stock_quantity = stock_quantity - ? WHERE product_id = ?",
+                    item.get("quantity"), item.get("productId"));
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         }
 
         // Update Wallet
@@ -144,17 +166,29 @@ public class PaymentService {
         jdbcTemplate.update("UPDATE cart SET is_active = 0 WHERE cart_id = ?", cartId);
 
         // 8. SEND NOTIFICATIONS
+<<<<<<< HEAD
         sendEmailInvoice(userEmail, userName, userPhone, totalAmount, cartItems);
         sendSMSNotification(userPhone, transactionReference, totalAmount);
+=======
+        sendEmailInvoice(userEmail, userName, transactionReference, totalAmount);
+        // sendSMSNotification(userPhone, transactionReference, totalAmount);
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 
         // Prepare response
         Map<String, Object> result = new HashMap<>();
         result.put("transactionId", transactionReference);
         result.put("status", "success");
+<<<<<<< HEAD
+=======
+        result.put("newBalance", walletBalance.subtract(totalAmount));
+        result.put("amount", totalAmount);
+        result.put("timestamp", LocalDateTime.now().toString());
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 
         return result;
     }
 
+<<<<<<< HEAD
     // Inside your Service class
     @Autowired
     private UserRepository userRepository;
@@ -176,10 +210,14 @@ public class PaymentService {
     }
 
     private void sendEmailInvoice(String toEmail, String name, String userPhone, BigDecimal totalAmount, List<Map<String, Object>> items) {
+=======
+    private void sendEmailInvoice(String toEmail, String name, String txnId, BigDecimal amount) {
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+<<<<<<< HEAD
             String invoiceNo = generateInvoiceNumber();
             helper.setTo(toEmail);
             helper.setSubject("Your Cognizant SmartPay Invoice - " + invoiceNo);
@@ -348,4 +386,84 @@ public class PaymentService {
             log.error("Native SMS Bypass Failed: {}", e.getMessage());
         }
     }
+=======
+            helper.setTo(toEmail);
+            helper.setSubject("Payment Receipt - Cognizant SmartPay");
+
+            String htmlBody = String.format(
+                    "<div style='font-family: Arial, sans-serif; border: 1px solid #eee; padding: 20px;'>" +
+                            "<h2 style='color: #2e7d32;'>Payment Successful!</h2>" +
+                            "<p>Hi %s,</p>" +
+                            "<p>Thank you for your purchase. Here is your transaction summary:</p>" +
+                            "<table style='width: 100%%; border-collapse: collapse;'>" +
+                            "<tr><td style='padding: 8px; border-bottom: 1px solid #eee;'><strong>Transaction ID:</strong></td><td>%s</td></tr>" +
+                            "<tr><td style='padding: 8px; border-bottom: 1px solid #eee;'><strong>Amount Paid:</strong></td><td style='color: #2e7d32; font-weight: bold;'>₹%.2f</td></tr>" +
+                            "</table>" +
+                            "<p>The amount has been debited from your SmartPay Wallet.</p>" +
+                            "</div>", name, txnId, amount);
+
+            helper.setText(htmlBody, true);
+            mailSender.send(message);
+            log.info("Receipt email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send email: {}", e.getMessage());
+        }
+    }
+
+//    private void sendSMSNotification(String phone, String txnId, BigDecimal amount) {
+//        try {
+//            // 1. YOUR CREDENTIALS
+//            String ACCOUNT_SID = "ACd9987b88c796e6e576058dd5dd257e45";
+//            String AUTH_TOKEN = "ade41fc759855b0d98e50d8fe6717621";
+//            String FROM_NUMBER = "+13158733994"; // Your Twilio Number
+//
+//
+//
+//            // 2. BYPASS SSL GLOBALLY FOR THIS REQUEST
+//            javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
+//                    new javax.net.ssl.X509TrustManager() {
+//                        public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
+//                        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+//                        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+//                    }
+//            };
+//            javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext.getInstance("SSL");
+//            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+//            javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+//            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+//
+//            // 3. PREPARE DATA
+//            String toPhone = phone.startsWith("+") ? phone : "+91" + phone;
+//            String msg = "SmartPay: Payment of Rs." + amount + " successful. Txn: " + txnId;
+//            String urlString = "https://api.twilio.com/2010-04-01/Accounts/" + ACCOUNT_SID + "/Messages.json";
+//
+//            // 4. SEND VIA HTTP POST
+//            java.net.URL url = new java.net.URL(urlString);
+//            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+//
+//            String auth = ACCOUNT_SID.trim() + ":" + AUTH_TOKEN.trim(); // Added .trim() to remove hidden spaces
+//            String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+//            conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
+//            conn.setRequestMethod("POST");
+//            conn.setDoOutput(true);
+//
+//            String postData = "To=" + java.net.URLEncoder.encode(toPhone, "UTF-8") +
+//                    "&From=" + java.net.URLEncoder.encode(FROM_NUMBER, "UTF-8") +
+//                    "&Body=" + java.net.URLEncoder.encode(msg, "UTF-8");
+//
+//            try (java.io.OutputStream os = conn.getOutputStream()) {
+//                os.write(postData.getBytes());
+//            }
+//
+//            if (conn.getResponseCode() == 201 || conn.getResponseCode() == 200) {
+//                log.info("SMS Sent Successfully via Native Java! Response: {}", conn.getResponseCode());
+//            } else {
+//                log.error("Twilio API Error Code: {}", conn.getResponseCode());
+//            }
+//
+//        } catch (Exception e) {
+//            log.error("Native SMS Bypass Failed: {}", e.getMessage());
+//        }
+//    }
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 }

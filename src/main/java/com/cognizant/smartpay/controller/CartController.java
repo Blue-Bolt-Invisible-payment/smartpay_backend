@@ -13,6 +13,12 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/cart")
+<<<<<<< HEAD
+=======
+
+@CrossOrigin(origins = "http://localhost:3000")
+
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 @RequiredArgsConstructor
 public class CartController {
 
@@ -82,7 +88,11 @@ public class CartController {
     public ResponseEntity<?> addItemByRfid(@RequestBody Map<String, Object> request) {
         Long userId = Long.valueOf(request.get("userId").toString());
         String rfidTag = request.get("rfidTag").toString();
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         cartService.addItemByRfid(userId, rfidTag);
         return ResponseEntity.ok(Map.of("success", true, "message", "Item added to cart"));
     }

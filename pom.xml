@@ -5,6 +5,10 @@
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -38,13 +42,22 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+<<<<<<< HEAD
     <!--mailsender-->
+=======
+
+        <!--mailsender-->
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
@@ -52,10 +65,17 @@
 
 
         <dependency>
+<<<<<<< HEAD
     <groupId>org.apache.httpcomponents.client5</groupId>
     <artifactId>httpclient5</artifactId>
     <version>5.2.1</version>
 </dependency>
+=======
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.1</version>
+        </dependency>
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
 
         <!--sms-->
         <dependency>
@@ -91,6 +111,10 @@
             <version>1.77</version>
         </dependency>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         <!-- Jackson for JSON -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -105,6 +129,10 @@
             <optional>true</optional>
         </dependency>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c2166c9f223089f1caeaf658a2a0e362a025065e
         <!-- Spring Boot Starter Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
