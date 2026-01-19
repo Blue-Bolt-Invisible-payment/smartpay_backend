@@ -90,6 +90,6 @@ public class CartController {
     @GetMapping("/health")
     public String testApp(){
 
-        return "Application is up and running fine";
+        return "Spring boot application is up and running fine success fully !!!";
     }
 }
