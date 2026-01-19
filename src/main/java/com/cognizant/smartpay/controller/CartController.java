@@ -86,4 +86,10 @@ public class CartController {
         cartService.addItemByRfid(userId, rfidTag);
         return ResponseEntity.ok(Map.of("success", true, "message", "Item added to cart"));
     }
+
+    @GetMapping("/health")
+    public String testApp(){
+
+        return "Application is up and running fine";
+    }
 }
