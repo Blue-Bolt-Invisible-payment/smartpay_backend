@@ -14,7 +14,7 @@ public class TagForwarder {
 
     public void forwardTag(List<String> tag) {
 
-        String url = "http://localhost:8080/api/rfid/read";
+        String url = "http://localhost:8080/api/scan/addtocart";
         restTemplate.postForObject(url, tag, Void.class);
     }
 }
